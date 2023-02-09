@@ -9,7 +9,7 @@ import pandas as pd
 STEP_1 = '0x' + keccak(b'PairCreated(address,address,address,uint256)').hex()
 STEP_2 = '0x' + keccak(b'Swap(address,uint256,uint256,uint256,uint256,address)').hex()
 
-STEP_3_1 = '0x' + keccak(b'swap(uint256,uint256,address,bytes)').hex()[:8]
+STEP_3_1 =  keccak(b'swap(uint256,uint256,address,bytes)').hex()[:8]
 STEP_3_2_1 =  '0x' + keccak(b'transfer(address,uint256)').hex()[:8]
 STEP_3_2_2 = '0x' + keccak(b'transferFrom(address,address,uint256)').hex()[:8]
 
@@ -37,14 +37,22 @@ def search_uniswap():
                     emit_swap_tx_hash.append(row['transaction_hash'])
         else:
             continue
+
     # 检查tx在调用对合约中swap函数时data是否大于0
     csv_reader_tx = pd.read_csv('E:/dataset/transactions.csv')
     for tx, row in csv_reader_tx.iterrows():
         if row['hash'] in emit_swap_tx_hash:
-            if STEP_3_1 == row['input'][:10]:
-                # 总长度减去data数据部分的偏移量（字节）如果不足64位（32字节）就不是，移除
-                if len(row['input']) - (10 + 4 * 64) <= 64:
+            location = row['input'].find(STEP_3_1)
+            if location != -1:
+                relocation = location + 8 + 4 * 64
+                if int(row['input'][relocation:relocation + 64], 16) == 0:
                     emit_swap_tx_hash.remove(row['hash'])
+                else:
+                    print(row['input'][location:location+8])
+            else:
+                emit_swap_tx_hash.remove(row['hash'])
+
+
 
     #TODO 最后两步判断
 
