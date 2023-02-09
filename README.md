@@ -7,5 +7,5 @@ uniswap: \
          2.在对合约中找触发swap事件的tx\
          3.判断tx：\
             1）调用swap函数时，data是否大于0\
-            2）由uniswapV2Call触发的内部事务必须带哦用transfer or transferFrom函数\
+            2）由uniswapV2Call触发的内部事务必须带transfer or transferFrom函数\
             3）transfer，transferFrom函数地址为对合约地址
