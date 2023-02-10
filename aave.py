@@ -17,17 +17,19 @@ def search_aave():
     num_of_p1 = 0
     num_of_p2 = 0
     num_of_p3 = 0
+    flash_loan_list = []
     for index, row in csv_reader.iterrows():
-        if PATTERN_1 == row['topics'].split(',')[0]:
+        if PATTERN_1 == str(row['topics']).split(',')[0]:
             num_of_p1 += 1
-            print(row)
-        elif PATTERN_2 == row['topics'].split(',')[0]:
+            flash_loan_list.append(row['transaction_hash'])
+        elif PATTERN_2 == str(row['topics']).split(',')[0]:
             num_of_p2 += 1
-            print(row)
-        elif PATTERN_3 == row['topics'].split(',')[0]:
+            flash_loan_list.append(row['transaction_hash'])
+        elif PATTERN_3 == str(row['topics']).split(',')[0]:
             num_of_p3 += 1
-            print(row)
-
+            flash_loan_list.append(row['transaction_hash'])
+    for ans in flash_loan_list:
+        print(ans)
     print("v1: %d, v2: %d, v3: %d, total: %d" % (num_of_p1, num_of_p2, num_of_p3, num_of_p1 + num_of_p2 + num_of_p3))
 
 
