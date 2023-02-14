@@ -20,14 +20,20 @@ def search_aave():
     flash_loan_list = []
     for index, row in csv_reader.iterrows():
         if PATTERN_1 == str(row['topics']).split(',')[0]:
-            num_of_p1 += 1
-            flash_loan_list.append(row['transaction_hash'])
+            if row['transaction_hash'] not in flash_loan_list:
+                num_of_p1 += 1
+                flash_loan_list.append(row['transaction_hash'])
+                print("v1: "+row['transaction_hash'])
         elif PATTERN_2 == str(row['topics']).split(',')[0]:
-            num_of_p2 += 1
-            flash_loan_list.append(row['transaction_hash'])
+            if row['transaction_hash'] not in flash_loan_list:
+                num_of_p2 += 1
+                flash_loan_list.append(row['transaction_hash'])
+                print("v2: " + row['transaction_hash'])
         elif PATTERN_3 == str(row['topics']).split(',')[0]:
-            num_of_p3 += 1
-            flash_loan_list.append(row['transaction_hash'])
+            if row['transaction_hash'] not in flash_loan_list:
+                num_of_p3 += 1
+                flash_loan_list.append(row['transaction_hash'])
+                print("v3: " + row['transaction_hash'])
     for ans in flash_loan_list:
         print(ans)
     print("v1: %d, v2: %d, v3: %d, total: %d" % (num_of_p1, num_of_p2, num_of_p3, num_of_p1 + num_of_p2 + num_of_p3))

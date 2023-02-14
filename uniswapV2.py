@@ -68,8 +68,11 @@ def search_uniswap():
                 flash_loan_list.append(tx)
 
     flash_loan_list = list(set(flash_loan_list))
+
+    f = open('uniswapV2.txt', 'w')
     for ans in flash_loan_list:
-        print(ans)
+        f.write(ans+"\n")
+    f.close()
 
     print(len(flash_loan_list))
 
