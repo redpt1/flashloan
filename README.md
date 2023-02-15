@@ -1,5 +1,8 @@
 # flashloan
 
+原论文aave v3 flashloan检测不出来，并且blocksec-phalcon也检测不出来 \
+例：0xdbe2728530377b7556a22912f9903d5a819c870cd8e3a16caad676635cbf8be8\
+
 aave： 只要追踪flashloan事件即可\
 dydx： 四个事件按顺序即可\
 uniswap: \
