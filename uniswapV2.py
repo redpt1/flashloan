@@ -15,47 +15,54 @@ STEP_3_2_2 = '0x' + keccak(b'transferFrom(address,address,uint256)').hex()[:8]
 
 
 def search_uniswap():
-    csv_reader = pd.read_csv('E:/dataset/logs.csv')
-    # 查找全部对合约地址
+    csv_reader = pd.read_csv('logs.csv')
+    
+    # Find all pairs of contract addresses
     pair_contract_address = []
     for index, row in csv_reader.iterrows():
         if STEP_1 == str(row['topics']).split(',')[0]:
             raw_address = '0x' + row['data'][26:66]
             pair_contract_address.append(raw_address)
-    # 去重
+            
+    # Deduplicate
     pair_contract_address = list(set(pair_contract_address))
+    
     # print(len(pair_contract_address))
-    # 根据对合约地址聚合
+    # According to the pair contract address to groupby
     csv_group_by = csv_reader.groupby('address')
-    # 获取触发swap事件的tx hash
+    
+    # Get the tx hash that triggers the swap event
     emit_swap_tx_hash = []
     for tx, group in csv_group_by:
         if tx in pair_contract_address:
             for index, row in group.iterrows():
-                # 如果触发了Swap事件
+                
+                # If the Swap event is triggered
                 if row['topics'].split(',')[0] == STEP_2:
                     emit_swap_tx_hash.append(row['transaction_hash'])
 
-    # 去重
+    # Deduplicate
     emit_swap_tx_hash = list(set(emit_swap_tx_hash))
 
     flash_loan_list = []
-    # 检查tx是否调用了swap函数
-    # 调用对合约中swap函数时data是否大于0
-    csv_reader_tx = pd.read_csv('E:/dataset/traces.csv')
+    
+    # Check whether tx calls the swap function
+    # Whether data is greater than 0 when calling the swap function in the pair contract
+    csv_reader_tx = pd.read_csv('traces.csv')
     csv_trace_group_by = csv_reader_tx.groupby('transaction_hash')
     for tx, group in csv_trace_group_by:
         if tx in emit_swap_tx_hash:
             flag = 0
             for index, row in group.iterrows():
-                # 如果存在swap函数
+                
+                # If there is a swap function
                 if str(row['input'])[:10] == STEP_3_1:
-                    # 并且data字段大于0
+                    
+                    # And the data field is greater than 0
                     if len(row['input']) > 10 + 64 * 4 and int(row['input'][10 + 64 * 4:], 16) != 0:
                         flag = 1
 
-                # 检查是否存在transfer or transferFrom
-
+                # Check if transfer or transferFrom exists
                 if str(row['input'])[:10] == STEP_3_2_1 and flag == 1:
                     if '0x' + row['input'][10 + 24:10 + 64] in pair_contract_address:
                         flag = 2
